@@ -2,28 +2,15 @@ import urllib.parse, urllib.request, urllib.error, json
 
 from flask import Flask, render_template
 
-# By default, App Engine will look for an app called `app` in `main.py`.
 app = Flask(__name__)
 
 @app.route("/")
 def input_form():
-  """ Return a greeting """
   return render_template('application.html')
 
 if __name__ == "__main__":
-# Used when running locally only.
-# When deploying to Google AppEngine, a webserver process will
-# serve your app.
   app.run(host="localhost", port=8080, debug=True)
 
-def pretty(obj):
-  return json.dumps(obj, sort_keys = True, indent = 2)
-
-#print("Enter 3-4 full sentences about how you were feeling yesterday.")
-#input1 = input()
-
-#print("Enter 3-4 full sentences about how you are feeling today.")
-#input2 = input()
 
 def get_one_day_emotion(body = ""):
   headers = {
@@ -38,12 +25,14 @@ def get_one_day_emotion(body = ""):
   jsonurl = json.loads(urlread)
   return jsonurl
 
+
 def get_one_day_emotion_safe(body = ""):
   try:
     return get_one_day_emotion(body)
   except urllib.error.URLError as e:
     print("Error trying to retrieve data:", e)
     return None
+
 
 def compare_day_emotions(body1,body2):
   params1 = {}
@@ -82,6 +71,7 @@ def compare_day_emotions(body1,body2):
 
   return final_emotions_dict
 
+
 def compare_day_emotions_safe(body1,body2):
   try:
     return compare_day_emotions(body1,body2)
@@ -93,12 +83,12 @@ def compare_day_emotions_safe(body1,body2):
 
 final_emotions_dict = compare_day_emotions_safe(input1,input2)
 
-#sorts emotions from highest to lowest
+"""sorts emotions from highest to lowest"""
 def sortKeysByValue(dict):
   keys = dict.keys()
   return sorted(keys, key=lambda k: dict[k], reverse=True)
 
-#returns strongest emotion as a string
+"""returns strongest emotion as a string"""
 emotionstring = ""
 emotionstring = sortKeysByValue(final_emotions_dict)[0]
 print(emotionstring)
