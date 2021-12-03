@@ -18,7 +18,7 @@ def get_one_day_emotion(body = ""):
   }
   baseurl = "https://api.promptapi.com/text_to_emotion"
   data = urllib.parse.quote(body).encode("utf-8")
-  req = urllib.request.Request(baseurl, headers = headers, data = data)  # this will make the method "POST"
+  req = urllib.request.Request(baseurl, headers = headers, data = data)
   resp = urllib.request.urlopen(req)
   urlread = resp.read()
   jsonurl = json.loads(urlread)
