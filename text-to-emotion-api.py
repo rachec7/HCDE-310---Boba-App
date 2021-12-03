@@ -11,7 +11,6 @@ def input_form():
 if __name__ == "__main__":
   app.run(host="localhost", port=8080, debug=True)
 
-
 def get_one_day_emotion(body = ""):
   headers = {
     "User-Agent": "Rachel's Food Menu App",
@@ -25,14 +24,12 @@ def get_one_day_emotion(body = ""):
   jsonurl = json.loads(urlread)
   return jsonurl
 
-
 def get_one_day_emotion_safe(body = ""):
   try:
     return get_one_day_emotion(body)
   except urllib.error.URLError as e:
     print("Error trying to retrieve data:", e)
     return None
-
 
 def compare_day_emotions(body1,body2):
   params1 = {}
@@ -70,7 +67,6 @@ def compare_day_emotions(body1,body2):
   final_emotions_dict['Fear'] = final_fear
 
   return final_emotions_dict
-
 
 def compare_day_emotions_safe(body1,body2):
   try:
