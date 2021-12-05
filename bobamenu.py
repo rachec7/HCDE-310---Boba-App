@@ -19,11 +19,11 @@ def main_handler():
         #app.logger.info(request.form.getlist('restaurant_type'))
 
         # get user input (emotion)
-        name = request.args.get('username')
-        app.logger.info(name)
+        emotion = request.args.get('input_1}')
+        app.logger.info(emotion)
 
         # if form filled in, greet them using this data
-        if name:
+        if emotion:
             # get user input (restaurant)
             restaurant = request.form.getlist('restaurant_type')
             app.logger.info(request.form.getlist('restaurant_type'))  
@@ -191,28 +191,6 @@ def make_recommendation_dict(mdict):
                     rdict[location][newsection][drink] = mdict[location][section][drink]
     return rdict
 
-# Function called write_menu()
-# 
-#       Takes in parameters:
-#       - drinkdict (dict): the output dictionary from get_restaurant_info()
-#       - csvfile (str): the csv file name to write the output to
-# 
-# Loops through the given dictionary, the output from get_restaurant_info(), passed in as a parameter and writes out to a given csv file.
-# 
-# The first line of the csv file is:
-#   section,drink,description,price
-#   and subsequent lines should contain the respective data.
-def write_menu(drinkdict, csvfile):
-    file = open(csvfile, "w")
-    file.write("section, drink, description, price")
-    for location in drinkdict:
-        for section in drinkdict[location]:
-            sectionchunk = drinkdict[location][section]
-            for drink in sectionchunk:
-                drinkdescription = sectionchunk[drink]["description"]
-                drinkprice = sectionchunk[drink]["price"]
-                file.write("\n""{section},\"{drink}\",\"{description}\",{price}".format(section=section, drink=drink, description=drinkdescription, price=drinkprice))
-    file.close()
 
 
 # Function called get_boba_section():
