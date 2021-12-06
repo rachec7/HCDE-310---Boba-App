@@ -5,53 +5,6 @@ from webbrowser import get
 def pretty(obj):
     return json.dumps(obj, sort_keys=True, indent=2)
 
-from flask import Flask, render_template, request
-import logging
-
-app = Flask(__name__)
-
-@app.route("/", methods=['GET', 'POST'])
-def main_handler():
-    app.logger.info("In MainHandler")
-    if request.method == 'POST':
-        # get user input (restaurant)
-        #restaurant = request.form.getlist('restaurant_type')
-        #app.logger.info(request.form.getlist('restaurant_type'))
-
-        # get user input (emotion)
-        emotion = request.args.get('input_1}')
-        app.logger.info(emotion)
-
-        # if form filled in, greet them using this data
-        if emotion:
-            # get user input (restaurant)
-            restaurant = request.form.getlist('restaurant_type')
-            app.logger.info(request.form.getlist('restaurant_type'))  
-
-            #restaurantid = get_restaurant_id(restaurant)
-            #md = get_restaurant_info(restaurantid)
-            #rd = make_recommendation_dict(md)
-            #bs = get_boba_section(emotionstr = "Sad", bobastore = restaurant, recommendationdict = rd)
-            #sd = get_boba_drink(bs)
-
-            return render_template('response.html',
-                page_title = "Boba Drink Suggestion Response for %s"%restaurant,
-                boba = [get_restaurant_id(restname = b) for b in restaurant])
-        #restaurant_type = request.form.getlist('restaurant_type')
-        #app.logger.info(restaurant_type)
-
-
-        #if not, then show the form again with a correction to the user
-        else:
-            return render_template('input-template.html',
-            page_title = "Boba Form - Error",
-            prompt = "How can we give you a drink suggestion if you don't fill anything out?")    
-    else:
-        return render_template('input-template.html', page_title = "Input Form")
-
-
-if __name__ == "__main__":
-  app.run(host="localhost", port=8080, debug=True)
 
 # returns the url or error
 def safe_get(url):
@@ -283,3 +236,48 @@ def get_restaurant_id(restname):
 ###print_suggested_drink(sd)
 
 # import emotionstring from filename as __
+from flask import Flask, render_template, request
+import logging
+
+app = Flask(__name__)
+
+@app.route("/")#, methods=['GET', 'POST'])
+def main_handler():
+    app.logger.info("In MainHandler")
+    if request.method == 'POST':
+        # get user input (restaurant)
+        restaurant = request.form.getlist('restaurant_type')
+        app.logger.info(request.form.getlist('restaurant_type'))
+
+        # get user input (emotion)
+        emotion = request.args.get('input_1}')
+        app.logger.info(emotion)
+
+        # if form filled in, greet them using this data
+        if restaurant:
+            # get user input (restaurant)
+            #restaurant = request.form.getlist('restaurant_type')
+            #app.logger.info(request.form.getlist('restaurant_type'))  
+            restaurantid = get_restaurant_id(restaurant)
+            md = get_restaurant_info(restaurantid)
+            rd = make_recommendation_dict(md)
+            bs = get_boba_section(emotionstr = "Sad", bobastore = restaurant, recommendationdict = rd)
+            sd = get_boba_drink(bs)
+            return render_template('response.html',
+                page_title = "Boba Drink Suggestion Response for %s"%restaurant,
+                boba = sd)
+        #restaurant_type = request.form.getlist('restaurant_type')
+        #app.logger.info(restaurant_type)
+
+
+        #if not, then show the form again with a correction to the user
+        else:
+            return render_template('input-template.html',
+            page_title = "Boba Form - Error",
+            prompt = "How can we give you a drink suggestion if you don't fill anything out?")    
+    else:
+        return render_template('input-template.html', page_title = "Input Form")
+
+
+if __name__ == "__main__":
+  app.run(host="localhost", port=8080, debug=True)
