@@ -241,7 +241,7 @@ import logging
 
 app = Flask(__name__)
 
-@app.route("/")#, methods=['GET', 'POST'])
+@app.route("/", methods=['GET', 'POST'])
 def main_handler():
     app.logger.info("In MainHandler")
     if request.method == 'POST':
@@ -266,8 +266,6 @@ def main_handler():
             return render_template('response.html',
                 page_title = "Boba Drink Suggestion Response for %s"%restaurant,
                 boba = sd)
-        #restaurant_type = request.form.getlist('restaurant_type')
-        #app.logger.info(restaurant_type)
 
 
         #if not, then show the form again with a correction to the user
@@ -281,3 +279,10 @@ def main_handler():
 
 if __name__ == "__main__":
   app.run(host="localhost", port=8080, debug=True)
+
+
+
+#input template
+#{% if prompt %}
+#<div class='formtitle'>{{prompt}}</div>
+#{% endif %}
