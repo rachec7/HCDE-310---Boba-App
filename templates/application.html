@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bubble Tea Generator Form</title>
+</head>
+<body>
+<form action="gresponse" method="post">
+    <label for="emotion1">Please enter 3-4 full sentences about how you were feeling yesterday:</label>
+    <input type="text" id="emotion1" name="{input_1}" /><br />
+    <label for="emotion2">Please enter 3-4 full sentences about how you are feeling today:</label>
+    <input type="text" id="emotion2" name="{input_2}" /><br />
+    Please select your favorite boba restaurant out of the following (select only ONE):<br />
+    <input type="checkbox" name="restaurant_type" value="Sharetea" id="Sharetea"/>
+    <label for="Sharetea">ShareTea</label><br />
+    <input type="checkbox" name="restaurant_type" value="CoCo Fresh Tea & Juice" id="CoCo Fresh Tea & Juice">
+    <label for="CoCo Fresh Tea & Juice">CoCo Fresh Tea & Juice</label><br />
+    <input type="checkbox" name="restaurant_type" value="Yifang Taiwan Fruit Tea" id="Yifang Taiwan Fruit Tea">
+    <label for="Yifang Taiwan Fruit Tea">Yifang Taiwan Fruit Tea</label><br />
+    <input type="submit" value="Submit" name="gobtn"/></form>
+</body>
+</html>
