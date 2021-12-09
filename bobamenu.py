@@ -13,6 +13,7 @@ def safe_get(url):
     except urllib.error.HTTPError as error:
         print("The server couldn't fulfill the request." )
         print("Error code: ", error.code)
+        print("Error: ", error)
     except urllib.error.URLError as error:
         print("We failed to reach a server")
         print("Reason: ", error.reason)
@@ -41,12 +42,10 @@ def documenuREST(baseurl = "https://api.documenu.com/v2/restaurant/",
 
     website = urllib.request.Request(url, headers = header)
 
-    restaurantrequest = safe_get(website)
-    restaurantrequeststr = restaurantrequest.read()
-    restaurantdata = json.loads(restaurantrequeststr)
+    #restaurantrequest = safe_get(website)
 
-    # return JSON
-    return restaurantdata
+    # return url
+    return safe_get(website)
 
 
 
@@ -65,32 +64,31 @@ def documenuREST(baseurl = "https://api.documenu.com/v2/restaurant/",
 # Returns the menu dictionary. 
 def get_restaurant_info(restaurant): #(restaurant_list):
     menudict = {}
-    restaurant_data = documenuREST(restaurant_id = restaurant)
+    print(restaurant)
+    restaurantrequest = documenuREST(restaurant_id = restaurant)
+    print(restaurantrequest)
+    if restaurantrequest is None:
+        return None
+    else:
+        restaurantrequeststr = restaurantrequest.read()
+        restaurantdata = json.loads(restaurantrequeststr)
 
-    name = restaurant_data["result"]["restaurant_name"]
-    id = restaurant_data["result"]["restaurant_id"]
-    menulist = restaurant_data["result"]["menus"]
+        menulist = restaurantdata["result"]["menus"]
 
-    if name not in menudict:
-        menudict[name] = {}
+        menusection = menulist[0]["menu_sections"]
+        for chunk in menusection:
+            sectionname = chunk["section_name"]
+            
+            if sectionname not in menudict:
+                menudict[sectionname] = {}
 
-    menusection = menulist[0]["menu_sections"]
-    for chunk in menusection:
-        sectionname = chunk["section_name"]
-        
-        if sectionname not in menudict[name]:
-            menudict[name][sectionname] = {}
+            for drink in chunk["menu_items"]:
+                drinkname = drink["name"]
 
-        sectionitems = chunk["menu_items"]
-        for drink in sectionitems:
-            drinkname = drink["name"]
-            drinkdescription = drink["description"]
-            drinkprice = drink["price"]
-
-            if drinkname not in menudict[name][sectionname]:
-                menudict[name][sectionname][drinkname] = {}
-                menudict[name][sectionname][drinkname]["description"] = drinkdescription
-                menudict[name][sectionname][drinkname]["price"] = drinkprice
+                if drinkname not in menudict[sectionname]:
+                    menudict[sectionname][drinkname] = {}
+                    menudict[sectionname][drinkname]["description"] = drink["description"]
+                    menudict[sectionname][drinkname]["price"] = drink["price"]
     return menudict
 
 # Function called make_recommendation_dict()
@@ -104,7 +102,7 @@ def get_restaurant_info(restaurant): #(restaurant_list):
 #                   ~ fruit tea
 #                   ~ tea
 #                   ~ milk tea
-#                   ~ fresh milk
+#                   ~ fresh milk/tea latte
 #                   ~ other
 # * this new menu only has five sections (to be assigned an emotion later when generating a drink for the user), so some of the sections of the
 #   current menu are combined/renamed to match *
@@ -112,36 +110,32 @@ def get_restaurant_info(restaurant): #(restaurant_list):
 # menus from all three boba restaurants will match in this format:
 #           - if the section is "fruit tea" or "fruit", rename the section as "fruit tea"
 #           - if the section is "brewed tea" or "tea" or "fresh tea", rename the section as "tea"
-#           - if the section is "milk tea" or "flavored tea", rename the section as "milk tea"
+#           - if the section is "milk tea" or "cheese cream drinks", rename the section as "milk tea"
 #           - if the section is "fresh tea" or "tea latte", rename the section as "fresh milk"
 #           - else, rename the section as "other" ("ice blended", "traditional taste", "chocolate", "yakult", "macchiato", "slush and smoothie")
 #
 # Returns the newly created dictionary. 
 def make_recommendation_dict(mdict):
     rdict = {}
-    for location in mdict:
-        if location not in rdict:
-            rdict[location] = {}
+    for section in mdict:
+        lsection = section.lower()
+        if lsection == "fruit tea" or lsection == "fruit":
+            newsection = "fruit tea"
+        elif lsection == "traditional taiwanese drink" or lsection == "tea" or lsection == "fresh tea" or lsection == "brewed tea":
+            newsection = "tea"
+        elif lsection == "milk tea" or lsection == "cheese cream drinks":
+            newsection = "milk tea"
+        elif lsection == "fresh milk" or lsection == "tea latte" or lsection == "brown sugar drinks" or lsection == "taro":
+            newsection = "fresh milk"
+        else: # everything else
+            newsection = "other"
         
-        for section in mdict[location]:
-            lsection = section.lower()
-            if lsection == "fruit tea" or lsection == "fruit":
-                newsection = "fruit tea"
-            elif lsection == "brewed tea" or lsection == "tea" or lsection == "fresh tea":
-                newsection = "tea"
-            elif lsection == "milk tea" or lsection == "flavored tea":
-                newsection = "milk tea"
-            elif lsection == "fresh milk" or lsection == "tea latte":
-                newsection = "fresh milk"
-            else: # everything else
-                newsection = "other"
-            
-            if newsection not in rdict:
-                rdict[location][newsection] = {}
-            
-            for drink in mdict[location][section]:
-                if drink not in rdict:
-                    rdict[location][newsection][drink] = mdict[location][section][drink]
+        if newsection not in rdict:
+            rdict[newsection] = {}
+        
+        for drink in mdict[section]:
+            if drink not in rdict:
+                rdict[newsection][drink] = mdict[section][drink]
     return rdict
 
 
@@ -163,18 +157,17 @@ def make_recommendation_dict(mdict):
 #               ~ sad -> other
 #               ~ surprise -> fresh milk
 # Returns the curated drink section suggestion dictionary.
-def get_boba_section(emotionstr, bobastore, recommendationdict):
-    rd = recommendationdict[bobastore]
+def get_boba_section(emotionstr, recommendationdict):
     if emotionstr == "Angry":
-        drinksuggestion = rd["tea"]
+        drinksuggestion = recommendationdict["tea"]
     elif emotionstr == "Fear":
-        drinksuggestion = rd["fruit tea"]
+        drinksuggestion = recommendationdict["fruit tea"]
     elif emotionstr == "Happy":
-        drinksuggestion = rd["milk tea"]
+        drinksuggestion = recommendationdict["milk tea"]
     elif emotionstr == "Sad":
-        drinksuggestion = rd["other"]
+        drinksuggestion = recommendationdict["other"]
     else: #emotionstr == "Surprise"
-        drinksuggestion = rd["fresh milk"]
+        drinksuggestion = recommendationdict["fresh milk"]
     return drinksuggestion
 
 # Function called get_boba_drink():
@@ -212,9 +205,9 @@ def print_suggested_drink(suggesteddrink):
 
 def get_restaurant_id(restname):
     if restname == "Sharetea":
-        return 47607063122320424
+        return 47540798122040000
     elif restname == "Yifang Taiwan Fruit Tea":
-        return 47829994122274430
+        return 45450256122781310
     else: # restname == "CoCo Fresh Tea & Juice"
         return 47617600122192770
 
@@ -224,14 +217,12 @@ def get_restaurant_id(restname):
 # Writes the menu output from get_restaurant_info() to a csv file.
 ###restaurant_list = [47607063122320424, 47829994122274430, 47617600122192770]
 #restaurant_list = [47607063122320424]
-###for restaurantid in restaurant_list:
-###    md = get_restaurant_info(restaurantid)
-###    name = get_restaurant_name(restaurantid)
-###    csvfilename = str(name+"_bobamenu.csv")
-###    write_menu(md, csvfilename)
-
-###rd = make_recommendation_dict(md)
-###bs = get_boba_section("Sad", "Sharetea", rd)
+rn = "Sharetea"
+restaurantid = get_restaurant_id(rn)
+md = get_restaurant_info(restaurantid)
+print(md)
+##rd = make_recommendation_dict(md)
+###bs = get_boba_section("Sad", rd)
 ###sd = get_boba_drink(bs)
 ###print_suggested_drink(sd)
 
@@ -250,22 +241,31 @@ def main_handler():
         app.logger.info(request.form.getlist('restaurant_type'))
 
         # get user input (emotion)
-        emotion = request.args.get('input_1}')
-        app.logger.info(emotion)
+        #emotion = request.args.get('input_1}')
+        #app.logger.info(emotion)
 
         # if form filled in, greet them using this data
         if restaurant:
             # get user input (restaurant)
-            #restaurant = request.form.getlist('restaurant_type')
-            #app.logger.info(request.form.getlist('restaurant_type'))  
-            restaurantid = get_restaurant_id(restaurant)
+            restaurantid = [get_restaurant_id(restname = b) for b in restaurant]
+            app.logger.info("got restaurant id: " + str(restaurantid))
+            app.logger.info("getting restaurant menu")
+            print(restaurantid)
             md = get_restaurant_info(restaurantid)
+            print(md)
+            app.logger.info("got menu dictionary")
+
+            #return json.dumps(md)
             rd = make_recommendation_dict(md)
-            bs = get_boba_section(emotionstr = "Sad", bobastore = restaurant, recommendationdict = rd)
+            app.logger.info("got recommendation menu")
+            bs = get_boba_section(emotionstr = "Sad", recommendationdict = rd)
+            app.logger.info("got boba section")
             sd = get_boba_drink(bs)
-            return render_template('response.html',
-                page_title = "Boba Drink Suggestion Response for %s"%restaurant,
-                boba = sd)
+            app.logger.info("got boba drink")
+            return json.dumps(sd)
+            #return render_template('response.html',
+            #    page_title = "Boba Drink Suggestion Response for %s"%restaurant,
+            #    boba = sd)
 
 
         #if not, then show the form again with a correction to the user

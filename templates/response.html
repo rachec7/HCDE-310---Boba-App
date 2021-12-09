@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>{{page_title}}</title>
+</head>
+<body>
+{% for drink in boba %}
+	<div class ='drink'>{{drink}}</div>
+	{{boba}} {{drink.0}} {{drink.1}}
+{% endfor %}
+<p><a href='/'>Get another drink suggestion?</a></p>
+</body>
+</html>
