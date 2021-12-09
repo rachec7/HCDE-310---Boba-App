@@ -262,10 +262,10 @@ def main_handler():
             app.logger.info("got boba section")
             sd = get_boba_drink(bs)
             app.logger.info("got boba drink")
-            return json.dumps(sd)
-            #return render_template('response.html',
-            #    page_title = "Boba Drink Suggestion Response for %s"%restaurant,
-            #    boba = sd)
+            #return json.dumps(sd)
+            return render_template('response.html',
+                page_title = "Boba Drink Suggestion Response for %s"%restaurant,
+                boba = sd)
 
 
         #if not, then show the form again with a correction to the user
