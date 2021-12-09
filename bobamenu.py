@@ -27,7 +27,7 @@ def safe_get(url):
 #       - params (dict): dictionary of parameters used in the url query string
 #       - restaurant_id (int): Numeric ID of the restaurant to get. Required.
 #
-# Function takes in parameters, using safe_get to open the url query string, returning the json restaurant data for the given restaurant
+# Function takes in parameters, using safe_get to open the url query string, returning the url query string
 import documenu_api_key as key
 def documenuREST(baseurl = "https://api.documenu.com/v2/restaurant/",
     key = key.key,
@@ -144,7 +144,6 @@ def make_recommendation_dict(mdict):
 # 
 #       Takes in parameters:
 #       - emotion (str): the user input emotion
-#       - bobastore (str): the user input boba store (they pick from "Yifang Taiwan Fruit Tea", "Sharetea", and "Coco Fresh Tea & Juice")
 #       - recommendationdict (dict): the recommendation dictionary
 # 
 # Loops through the given recommendation menu dictionary, the output from make_recommendation_dict(), passed in as a parameter to get the drink section
@@ -203,6 +202,12 @@ def print_suggested_drink(suggesteddrink):
         print("{} [{}] - {}".format(dname, dprice, ddescription))
 
 
+# Function called get_restaurant_id():
+# 
+#       Takes in parameter:
+#       - restname (str): the restaurant name as a string
+#
+# Returns the corresponding integer for the given restaurant
 def get_restaurant_id(restname):
     if restname == "Sharetea":
         return 47540798122040000
@@ -211,6 +216,7 @@ def get_restaurant_id(restname):
     else: # restname == "CoCo Fresh Tea & Juice"
         return 47617600122192770
 
+## CODE FOR TESTING TO SEE IF API WORKS
 # Get the restaurant information of three restaurants in a list.
 # Iterate through each restaurant in the list, using get_restaurant_info.
 # Get the boba shop name using get_restaurant_name and names the csvfile accordingly with: the boba shop name + "_bobamenu.csv" (ex: Sharetea_bobamenu.csv)
