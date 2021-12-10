@@ -18,11 +18,15 @@
 <h1>Based on your response, you should try out this drink!</h1>
 
 <div class= 'drink'>
-	Drink: {{boba.0}}<br /> 
+	<h3>Drink: {{boba.0}}</h3><br /> 
 
 	{% for item in boba.1 %}
 		{% if boba.1[item] != '' %}
-			Drink {{item}}: {{boba.1[item]}}<br />
+			{% if boba.1 == 'price' %}
+				Drink {{item}}: &#36;{{boba.1[item]}}<br />
+			{% else %}
+				Drink {{item}}: {{boba.1[item]}}<br />
+			{% endif %}
 		{% endif %}
 	{% endfor %}
 </div>
