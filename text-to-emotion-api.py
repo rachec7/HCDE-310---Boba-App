@@ -10,11 +10,8 @@ def get_one_day_emotion(body = ""):
     "apikey": "UdBdTBiWyMZRa741w31wW9xmAvFEjLfe"
   }
   baseurl = "https://api.promptapi.com/text_to_emotion"
-  print(body)
   data = urllib.parse.quote(body).encode("utf-8")
-  print(data)
   req = urllib.request.Request(baseurl, headers = headers, data = data)
-  print(req)
   resp = urllib.request.urlopen(req)
   urlread = resp.read()
   jsonurl = json.loads(urlread)
@@ -36,8 +33,6 @@ def compare_day_emotions(body1,body2):
 
   dict1 = get_one_day_emotion_safe(body = body1)
   dict2 = get_one_day_emotion_safe(body = body2)
-  print(dict1)
-  print(dict2)
 
   happy1 = dict1['Happy']
   angry1 = dict1['Angry']
@@ -73,8 +68,6 @@ def compare_day_emotions_safe(body1,body2):
     print("Error trying to retrieve data:", e)
     return None
 
-#final_emotions_dict = compare_day_emotions_safe(input_1,input_2)
-
 """sorts emotions from highest to lowest"""
 def sortKeysByValue(dict):
   keys = dict.keys()
@@ -90,7 +83,6 @@ def input_form():
     if input_1 and input_2:
     # if form filled in, return string of strongest emotion
       final_emotions_dict_safe = compare_day_emotions_safe(input_1,input_2)
-      print(final_emotions_dict_safe)
       emotionstring = sortKeysByValue(final_emotions_dict_safe)[0]
       #return render_template('emotionstring.html',page_title="Success",emotionstring = emotionstring)
     else:
