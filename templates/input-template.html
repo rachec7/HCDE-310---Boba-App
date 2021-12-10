@@ -1,23 +1,40 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Boba Drink Generator Form</title>
+    <title>Boba Drink Generator Form</title>
+    <h1>Boba Drink Generator Form</h1>
+    <em>Can't decide on what drink to order? Fill out this form to get a drink suggestion!</em><br /><br /><br />
+    <style>
+        body{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            font-size: 1em;
+            line-height: 1.2;
+            float: left;
+            text-align: left;
+        }
+        .formtitle{
+            float:left;
+            text-align:left;
+            color: rgb(252, 13, 84);
+        }
+        .formtitle td{vertical-align:bottom}
+    </style>
 </head>
 <body>
 <form action="/" method="post">
-    <label for="emotion1">Please enter 3-4 full sentences about how you were feeling YESTERDAY:</label>
+    <label for="emotion1">Please enter 3-4 full sentences about how you were feeling <strong>YESTERDAY</strong>:</label>
     <input type="text" id="emotion1" name="{input_1}" /><br />
-    <label for="emotion2">Please enter 3-4 full sentences about how you are feeling TODAY:</label>
-    <input type="text" id="emotion2" name="{input_2}" /><br />
-    Please select only ONE boba shop out of the following (select only ONE):<br />
+    <label for="emotion2">Please enter 3-4 full sentences about how you are feeling <strong>TODAY</strong>:</label>
+    <input type="text" id="emotion2" name="{input_2}" /><br /><br />
+    Please select only <strong>ONE</strong> boba shop out of the following <em>(select only ONE)</em>:<br />
     <input type="checkbox" name="restaurant_type" value="Sharetea" id="Sharetea"/>
     <label for="Sharetea">Sharetea</label><br />
     <input type="checkbox" name="restaurant_type" value="CoCo Fresh Tea & Juice" id="CoCo Fresh Tea & Juice">
     <label for="CoCo Fresh Tea & Juice">CoCo Fresh Tea & Juice</label><br />
     <input type="checkbox" name="restaurant_type" value="Yifang Taiwan Fruit Tea" id="Yifang Taiwan Fruit Tea">
-    <label for="Yifang Taiwan Fruit Tea">Yifang Taiwan Fruit Tea</label><br />
+    <label for="Yifang Taiwan Fruit Tea">Yifang Taiwan Fruit Tea</label><br /><br />
     <input type="submit" value="Submit" name="gobtn"/>
-</form>
+</form><br /><br />
 {% if prompt %}
 <div class= 'formtitle'>{{prompt}}</div>
 {% endif %}

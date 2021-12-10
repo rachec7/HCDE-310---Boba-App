@@ -42,11 +42,23 @@ def documenuREST(baseurl = "https://api.documenu.com/v2/restaurant/",
 
     website = urllib.request.Request(url, headers = header)
 
-    #restaurantrequest = safe_get(website)
-
     # return url
     return safe_get(website)
 
+
+# Function called get_restaurant_id():
+# 
+#       Takes in parameter:
+#       - restname (str): the restaurant name as a string
+#
+# Returns the corresponding integer for the given restaurant
+def get_restaurant_id(restname):
+    if restname == "Sharetea":
+        return 47607063122320424
+    elif restname == "Yifang Taiwan Fruit Tea":
+        return 45450256122781310
+    else: # restname == "CoCo Fresh Tea & Juice"
+        return 47617600122192770
 
 
 # Function called get_restaurant_info()
@@ -64,9 +76,9 @@ def documenuREST(baseurl = "https://api.documenu.com/v2/restaurant/",
 # Returns the menu dictionary. 
 def get_restaurant_info(restaurant): #(restaurant_list):
     menudict = {}
-    print(restaurant)
+    #print(restaurant)
     restaurantrequest = documenuREST(restaurant_id = restaurant)
-    print(restaurantrequest)
+    #print(restaurantrequest)
     if restaurantrequest is None:
         return None
     else:
@@ -112,16 +124,16 @@ def get_restaurant_info(restaurant): #(restaurant_list):
 #           - if the section is "brewed tea" or "tea" or "fresh tea", rename the section as "tea"
 #           - if the section is "milk tea" or "cheese cream drinks", rename the section as "milk tea"
 #           - if the section is "fresh tea" or "tea latte", rename the section as "fresh milk"
-#           - else, rename the section as "other" ("ice blended", "traditional taste", "chocolate", "yakult", "macchiato", "slush and smoothie")
+#           - else, rename the section as "other" ("ice blended", "winter special", "chocolate", "yakult", "macchiato", "slush and smoothie")
 #
 # Returns the newly created dictionary. 
 def make_recommendation_dict(mdict):
     rdict = {}
     for section in mdict:
         lsection = section.lower()
-        if lsection == "fruit tea" or lsection == "fruit":
+        if lsection == "fruit tea":
             newsection = "fruit tea"
-        elif lsection == "traditional taiwanese drink" or lsection == "tea" or lsection == "fresh tea" or lsection == "brewed tea":
+        elif lsection == "traditional taiwanese drink" or lsection == "fresh tea" or lsection == "brewed tea":
             newsection = "tea"
         elif lsection == "milk tea" or lsection == "cheese cream drinks":
             newsection = "milk tea"
@@ -137,7 +149,6 @@ def make_recommendation_dict(mdict):
             if drink not in rdict:
                 rdict[newsection][drink] = mdict[section][drink]
     return rdict
-
 
 
 # Function called get_boba_section():
@@ -202,20 +213,6 @@ def print_suggested_drink(suggesteddrink):
         print("{} [{}] - {}".format(dname, dprice, ddescription))
 
 
-# Function called get_restaurant_id():
-# 
-#       Takes in parameter:
-#       - restname (str): the restaurant name as a string
-#
-# Returns the corresponding integer for the given restaurant
-def get_restaurant_id(restname):
-    if restname == "Sharetea":
-        return 47540798122040000
-    elif restname == "Yifang Taiwan Fruit Tea":
-        return 45450256122781310
-    else: # restname == "CoCo Fresh Tea & Juice"
-        return 47617600122192770
-
 ## CODE FOR TESTING TO SEE IF API WORKS
 # Get the restaurant information of three restaurants in a list.
 # Iterate through each restaurant in the list, using get_restaurant_info.
@@ -223,10 +220,10 @@ def get_restaurant_id(restname):
 # Writes the menu output from get_restaurant_info() to a csv file.
 ###restaurant_list = [47607063122320424, 47829994122274430, 47617600122192770]
 #restaurant_list = [47607063122320424]
-rn = "Sharetea"
-restaurantid = get_restaurant_id(rn)
-md = get_restaurant_info(restaurantid)
-print(md)
+#rn = "Sharetea"
+#restaurantid = get_restaurant_id(rn)
+#md = get_restaurant_info(restaurantid)
+#print(md)
 ##rd = make_recommendation_dict(md)
 ###bs = get_boba_section("Sad", rd)
 ###sd = get_boba_drink(bs)
@@ -253,24 +250,25 @@ def main_handler():
         # if form filled in, greet them using this data
         if restaurant:
             # get user input (restaurant)
-            restaurantid = [get_restaurant_id(restname = b) for b in restaurant]
+            restaurantid = [get_restaurant_id(restname = b) for b in restaurant][0]
             app.logger.info("got restaurant id: " + str(restaurantid))
             app.logger.info("getting restaurant menu")
-            print(restaurantid)
+            #print(restaurantid)
             md = get_restaurant_info(restaurantid)
-            print(md)
+            #print(md)
             app.logger.info("got menu dictionary")
 
             #return json.dumps(md)
             rd = make_recommendation_dict(md)
             app.logger.info("got recommendation menu")
-            bs = get_boba_section(emotionstr = "Sad", recommendationdict = rd)
+            bs = get_boba_section(emotionstr = "Surprise", recommendationdict = rd)
             app.logger.info("got boba section")
             sd = get_boba_drink(bs)
             app.logger.info("got boba drink")
+            print(sd)
             #return json.dumps(sd)
             return render_template('response.html',
-                page_title = "Boba Drink Suggestion Response for %s"%restaurant,
+                page_title = "Boba Drink Suggestion Response for %s"%restaurant[0],
                 boba = sd)
 
 
@@ -278,14 +276,16 @@ def main_handler():
         else:
             return render_template('input-template.html',
             page_title = "Boba Form - Error",
-            prompt = "How can we give you a drink suggestion if you don't fill anything out?")    
+            prompt = "How can we give you a drink suggestion if you don't fill anything out? Please fill out the form :)")    
     else:
         return render_template('input-template.html', page_title = "Input Form")
 
 
 if __name__ == "__main__":
+    # Used when running locally only. 
+	# When deploying to Google AppEngine, a webserver process will
+	# serve your app.     
   app.run(host="localhost", port=8080, debug=True)
-
 
 
 #input template
