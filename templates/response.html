@@ -22,12 +22,9 @@
 
 	{% for item in boba.1 %}
 		{% if boba.1[item] != '' %}
-			{{item}}: {{boba.1[item]}}<br />
+			Drink {{item}}: {{boba.1[item]}}<br />
 		{% endif %}
 	{% endfor %}
-
-	price: {{boba.1['price']}}<br />
-	drink description: {{boba.1['description']}}<br />
 </div>
 <p><a href='/'>Get another drink suggestion?</a></p>
 </body>
