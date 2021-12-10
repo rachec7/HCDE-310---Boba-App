@@ -83,7 +83,6 @@ def input_form():
     if input_1 and input_2:
     # if form filled in, return string of strongest emotion
       final_emotions_dict_safe = compare_day_emotions_safe(input_1,input_2)
-      print(final_emotions_dict_safe)
       emotionstring = sortKeysByValue(final_emotions_dict_safe)[0]
       #return render_template('emotionstring.html',page_title="Success",emotionstring = emotionstring)
     else:
