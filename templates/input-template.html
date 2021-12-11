@@ -17,10 +17,31 @@
             text-align:left;
             color: rgb(252, 13, 84);
         }
-        .formtitle td{vertical-align:bottom}
+        .image-container {
+			max-width: 45vw;
+			max-height: 75vh;
+			position: absolute;
+            right:200px;
+            bottom:200px;
+            
+		}
+		.image-container img {
+			display: flex;
+			align-items: flex-start;
+			max-height: 75vh;
+			max-width:40vw;
+			margin: auto auto;
+		}
     </style>
 </head>
 <body>
+    <div class="column right">
+        <div class="divblock"></div>
+            <div class="image-container">
+                <img src="{{ url_for('static', filename=gif_url) }}" alt="bobabee">
+            </div>
+        </div>
+    </div>
 <form action="/" method="post">
     <label for="emotion1">Please enter 3-4 full sentences about how you were feeling <strong>YESTERDAY</strong>:</label>
     <input type="text" id="emotion1" name="{input_1}" /><br />

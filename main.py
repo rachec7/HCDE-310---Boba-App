@@ -6,6 +6,10 @@ from webbrowser import get
 from flask import Flask, render_template, request
 import logging
 
+# [SSL: CERTIFICATE_VERIFY_FAILED] error
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
+
 app = Flask(__name__)
 
 def get_one_day_emotion(body = ""):
@@ -171,6 +175,12 @@ def get_restaurant_info(restaurant): #(restaurant_list):
             for drink in chunk["menu_items"]:
                 drinkname = drink["name"]
 
+                # Check if drink name has "Hot" or "Cold", removing these if they are in the drink name
+                if drinkname[:4] == "Hot ":
+                    drinkname = drinkname[4:]
+                elif drinkname[:5] == "Cold ":
+                    drinkname = drinkname[5:]
+
                 if drinkname not in menudict[sectionname]:
                     menudict[sectionname][drinkname] = {}
                     menudict[sectionname][drinkname]["description"] = drink["description"]
@@ -266,25 +276,23 @@ def get_boba_drink(drinkdict):
     randomdrink = random.choice(drinklist)
     return randomdrink
 
-# Function called print_suggested_drink():
+
+# Function called get_drink_url():
 # 
-#       Takes in parameter:
+#       Takes in parameters:
+#       - bobalocation (str): string of the restaurant chosen by the user
 #       - suggesteddrink (tuple): the randomly chosen drink
 #
-# Prints out the drink and drink information of the given drink (the output from get_boba_drink()) with the following format and information:
-#   {{drink name}} [{{drink price}}] - {{drink description}}
-#
-# If the drink description is blank (ex: ""), the drink and drink information is printed out with the following format and information:
-#   {{drink name}} [{{drink price}}]
-def print_suggested_drink(suggesteddrink):
-    dname = suggesteddrink[0]
-    dinfo = suggesteddrink[1]
-    dprice = dinfo["price"]
-    ddescription = dinfo["description"]
-    if ddescription == "":
-        print("{} [{}]".format(dname, dprice))
-    else:
-        print("{} [{}] - {}".format(dname, dprice, ddescription))
+# Takes in the given boba location and drink suggestion recommendation, building up the drink url to be used in the html
+# Removes all white space in the drink name. Returns the drink url.
+def get_drink_url(bobalocation, suggesteddrink):
+    drink = ""
+    removespace = suggesteddrink[0].split()
+    for item in removespace:
+        drink += item
+    drinkurl = bobalocation[0] + "/" + drink + ".jpeg"
+    return drinkurl 
+
 
 
 ### Flask ###
@@ -295,17 +303,19 @@ def input_form():
     if request.method == "POST":
         # get yesterday's emotion
         input_1 = request.form.get('{input_1}')
+        app.logger.info("yesterday's emotion")
         app.logger.info(input_1)
 
         # get today's emotion
         input_2 = request.form.get('{input_2}')
+        app.logger.info("today's emotion")
         app.logger.info(input_2)
 
         # get restaurant
         restaurant = request.form.getlist('restaurant_type')
-        app.logger.info(request.form.getlist('restaurant_type'))
+        app.logger.info("user chosen restaurant")
+        app.logger.info(restaurant)
 
-        #if request.method == "POST":
         # if form filled in, greet them using this data
         if input_1 and input_2 and restaurant:
             # if form filled in, return string of strongest emotion
@@ -326,21 +336,31 @@ def input_form():
             app.logger.info("got boba section")
             sd = get_boba_drink(bs)
             app.logger.info("got boba drink")
-            print(sd)            
+            print(sd) 
+            url = get_drink_url(bobalocation = restaurant, suggesteddrink = sd)
+            app.logger.info(url)
+            print(url)            
             
             return render_template('response.html',
+                drink_url = url,
                 page_title = "Boba Drink Suggestion Response for %s"%restaurant[0],
+                gif_url = "/bobabee.gif",
                 boba = sd)      
 
         #if not, then show the form again with a correction to the user
         else:
             return render_template('input-template.html',
             page_title = "Boba Form - Error",
+            gif_url = "/bobabeesad.gif",
             prompt = "How can we give you a drink suggestion if you don't fill everything out? Please fill out the form :)")    
     else:
-        return render_template('input-template.html', page_title = "Input Form")
-
+        return render_template('input-template.html',
+        gif_url = "/bobabee.gif",
+        page_title = "Input Form")
 
 
 if __name__ == "__main__":
-  app.run(host="localhost", port=8080, debug=True)
+    # Used when running locally only. 
+	# When deploying to Google AppEngine, a webserver process will
+	# serve your app.     
+    app.run(host="localhost", port=8080, debug=True)
