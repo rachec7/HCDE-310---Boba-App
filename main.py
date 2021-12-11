@@ -344,18 +344,18 @@ def input_form():
             return render_template('response.html',
                 drink_url = url,
                 page_title = "Boba Drink Suggestion Response for %s"%restaurant[0],
-                gif_url = "/bobabee.gif",
+                gif_url = "bobabee.gif",
                 boba = sd)      
 
         #if not, then show the form again with a correction to the user
         else:
             return render_template('input-template.html',
             page_title = "Boba Form - Error",
-            gif_url = "/bobabeesad.gif",
+            gif_url = "bobabeesad.gif",
             prompt = "How can we give you a drink suggestion if you don't fill everything out? Please fill out the form :)")    
     else:
         return render_template('input-template.html',
-        gif_url = "/bobabee.gif",
+        gif_url = "bobabee.gif",
         page_title = "Input Form")
 
 
