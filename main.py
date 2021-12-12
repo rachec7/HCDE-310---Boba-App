@@ -133,7 +133,7 @@ def documenuREST(baseurl = "https://api.documenu.com/v2/restaurant/",
 def get_restaurant_id(restname):
     if restname == "Sharetea":
         return 47607063122320424
-    elif restname == "Yifang Taiwan Fruit Tea":
+    elif restname == "Yifang":
         return 45450256122781310
     else: # restname == "CoCo Fresh Tea & Juice"
         return 47617600122192770
