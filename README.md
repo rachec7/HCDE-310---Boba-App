@@ -15,3 +15,7 @@ The drink suggestion will include:
 - Drink description (if the menu included a description for the drink)
 - Drink price
 - Image of the drink
+
+
+Feel free to try out our app here to get a drink suggestion!
+http://boba-drink-generator.uw.r.appspot.com
